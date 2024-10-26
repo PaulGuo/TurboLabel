@@ -1,11 +1,12 @@
 # Project
 .DS_Store
 settings.dev.yaml
-annotations/
-cache/model/
-data/
-model/
-visualizations/
+annotations/*.json
+cache/model/*.json
+data/*.png
+model/*.pt
+visualizations/*.png
+logs/*.log
 sam2/checkpoints/*.pt
 
 # Byte-compiled / optimized / DLL files

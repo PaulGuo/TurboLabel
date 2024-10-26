@@ -13,6 +13,55 @@ class AnnotationProcessor:
         self.sam_model_name = sam_model_name
         self.predictor = SAM2ImagePredictor(build_sam2(sam2_config, sam2_checkpoint, device=device))
 
+    def calculate_iou(self, box1, box2):
+        """Calculate Intersection over Union (IoU) between two bounding boxes in xywh format"""
+        # Convert [x, y, w, h] to [x_min, y_min, x_max, y_max]
+        x1, y1, w1, h1 = box1
+        x2, y2, w2, h2 = box2
+
+        x1_max, y1_max = x1 + w1, y1 + h1
+        x2_max, y2_max = x2 + w2, y2 + h2
+
+        # Compute the intersection coordinates
+        xi1, yi1 = max(x1, x2), max(y1, y2)
+        xi2, yi2 = min(x1_max, x2_max), min(y1_max, y2_max)
+
+        # Compute area of intersection
+        inter_width = max(0, xi2 - xi1)
+        inter_height = max(0, yi2 - yi1)
+        inter_area = inter_width * inter_height
+
+        # Compute areas of each box and union area
+        box1_area = w1 * h1
+        box2_area = w2 * h2
+        union_area = box1_area + box2_area - inter_area
+
+        # Calculate and return IoU
+        return inter_area / union_area if union_area > 0 else 0
+
+    def check_duplicate_bboxes(self, annotations, image_file):
+        """Check for duplicate bounding boxes with high IoU and log them."""
+        duplicate_log = []
+        for i in range(len(annotations)):
+            for j in range(i + 1, len(annotations)):
+                bbox1 = annotations[i]['bbox']
+                bbox2 = annotations[j]['bbox']
+                iou = self.calculate_iou(bbox1, bbox2)
+
+                # If IoU is high (greater than 0.99), log as duplicate
+                if iou > 0.94:
+                    category_name_bbox1 = annotations[i]['category_name']
+                    category_name_bbox2 = annotations[j]['category_name']
+                    duplicate_log.append(f"Image: {image_file}, Category: {category_name_bbox1}, BBox1: {bbox1}, Category: {category_name_bbox2}, BBox2: {bbox2}")
+
+        # Write duplicates to log file if any were found
+        if duplicate_log:
+            log_file_path = "logs/duplicate_bboxes.log"
+            os.makedirs(os.path.dirname(log_file_path), exist_ok=True)
+            with open(log_file_path, "a") as log_file:
+                for log in duplicate_log:
+                    log_file.write(log + "\n")
+
     def process_image(self, image_path, class_info, conversion_function, image_size, confidence_threshold, debug_mode, save_visualizations, visualization_folder):
         """Process a single image and generate annotations"""
         image_name = os.path.splitext(os.path.basename(image_path))[0]
@@ -85,6 +134,9 @@ class AnnotationProcessor:
                     debug_masks.append(best_mask)
                     debug_points.append(input_point)
                     debug_point_labels.append(input_label)
+
+        # Check for duplicate bounding boxes based on IoU
+        self.check_duplicate_bboxes(annotations, image_file)
 
         # If in debug mode, display visualization output
         if debug_mode and debug_boxes:
