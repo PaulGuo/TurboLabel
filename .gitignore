@@ -1,3 +1,13 @@
+# Project
+.DS_Store
+settings.dev.yaml
+annotations/
+cache/model/
+data/
+model/
+visualizations/
+sam2/checkpoints/*.pt
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

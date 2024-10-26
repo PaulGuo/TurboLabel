@@ -1,0 +1,43 @@
+# Model configuration
+model:
+  yolo_model_path: "./model/yolo-pretrained-best.pt"  # YOLO model file path
+  sam_model_name: "sam2.1_hiera"
+  sam_model_checkpoint: "./sam2/checkpoints/sam2.1_hiera_large.pt"  # SAM model checkpoint path
+  sam_model_config: "configs/sam2.1/sam2.1_hiera_l.yaml"  # SAM model configuration file
+
+# Path settings
+paths:
+  input_folder: "./data"  # Input image folder path
+  output_folder: "./annotations"  # Annotation output folder path
+  cache_folder: "./cache"  # Cache folder path
+  schema_folder: "./schema"  # Schema folder path
+
+# Processing parameters
+processing:
+  image_size: 640  # Image size for model processing
+  confidence_threshold: 0.5  # Confidence threshold for YOLO model
+  use_cache: true  # Whether to use cache, true enables cache
+  debug_mode: true  # Whether to enable debug mode; outputs more information if enabled
+
+# Annotation settings
+annotation:
+  format: "labelstudio"  # Annotation format type, e.g., "labelstudio" or "coco"
+  category_mapping:  # Category mapping
+    0: "Category 1"
+    1: "Category 2"
+    2: "Category 3"
+    3: "Category 4"
+    4: "Category 5"
+
+# Miscellaneous settings
+misc:
+  save_visualizations: true  # Whether to save visualizations
+  visualization_folder: "./visualizations"  # Path to save visualizations
+
+openai:
+  OPENAI_API_TYPE: "azure"
+  OPENAI_API_VERSION: "2024-02-01"
+  OPENAI_API_BASE: "<OPENAI_API_BASE_URL>"
+  OPENAI_API_KEY: "<OPENAI_API_KEY>"  # Do not store plain text secrets in production code
+  OPENAI_DEPLOYMENT_NAME: "gpt-35-turbo"
+  TEMPERATURE: 0

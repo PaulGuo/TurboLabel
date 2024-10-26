@@ -1,0 +1,54 @@
+Notes:
+- For example, import predicted bounding box regions (rectangles) and choices for tasks to determine whether an item in an image is an airplane or a car.
+- For image pre-annotations, Label Studio expects the x, y, width, and height of image annotations to be provided in percentages of overall image dimension. See Units for image annotations on this page for more about how to convert formats.
+- The image path has been adjusted to follow the format "/data/local-files/?d=label-studio/data/localstorage/test/{image_file}", where {image_file} is the name of the image file.
+
+[{
+    "data": {
+        "image": "label-studio/1.jpg" // 这里是调整后的图片路径，调整格式为"/data/local-files/?d=label-studio/data/localstorage/test/{图片文件}"
+    },
+
+    "predictions": [
+        {
+            "model_version": "sam2.1_hiera", // 这里是SAM模型名称
+            "result": [
+                {
+                    "from_name": "label",
+                    "id": "t5sp3TyXPo", // 这里是唯一ID
+                    "source": "$image",
+                    "to_name": "image",
+                    "type": "rectanglelabels",
+                    "value": {
+                        "height": 11.612284069097889, // 标注框的高 / 图像高度 * 100
+                        "rectanglelabels": [
+                            "Moonwalker"  // 这里是标注框的类别
+                        ],
+                        "rotation": 0,
+                        "width": 39.6, // 标注框的宽 / 图像宽度 * 100
+                        "x": 13.2, // 标注框的X坐标值 / 图像宽度 * 100
+                        "y": 34.702495201535505 // 标注框的Y坐标值 / 图像高度 * 100
+                    }
+                },
+                {
+                    "from_name": "label",
+                    "id": "t5sp3TyXPo",
+                    "source": "$image",
+                    "to_name": "image",
+                    "type": "rectanglelabels",
+                    "value": {
+                        "height": 33.61228406909789,
+                        "rectanglelabels": [
+                            "Moonwalker"
+                        ],
+                        "rotation": 0,
+                        "width": 39.6,
+                        "x": 13.2,
+                        "y": 54.702495201535505
+                    }
+                }
+            ]
+        }
+    ]
+}
+...
+]
