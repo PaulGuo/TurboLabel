@@ -1,6 +1,6 @@
 # TurboLabel
 
-#### A powerful annotation tool combining YOLO, SAM, and LLMs for flexible image labeling.
+#### A powerful annotation efficiency tool combining YOLO, SAM, and LLMs for flexible image labeling.
 
 **TurboLabel** is an advanced annotation tool that combines powerful object detection with SAM-based segmentation to automate and streamline image labeling. Designed for flexible compatibility, TurboLabel supports multiple annotation formats such as Label Studio and COCO, and offers efficient caching, model selection, and flexible configuration for various use cases.
 
