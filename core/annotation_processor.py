@@ -96,11 +96,13 @@ class AnnotationProcessor:
                 center_y = (y_min + y_max) / 2
                 input_point = np.array([[center_x, center_y]])
                 input_label = np.array([1])
+                input_box = np.array([x_min, y_min, x_max, y_max])
 
                 # Perform segmentation using SAM2
                 masks, scores, _ = self.predictor.predict(
                     point_coords=input_point,
                     point_labels=input_label,
+                    box=input_box,
                     multimask_output=True
                 )
 
