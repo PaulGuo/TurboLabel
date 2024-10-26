@@ -13,13 +13,7 @@ from ultralytics import YOLO
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def main():
-    parser = argparse.ArgumentParser(description="Pre-annotation CLI Tool")
-    parser.add_argument("--model", help="Specify YOLO model file (.pt)")
-    parser.add_argument("--sam_checkpoint", default="./checkpoints/sam2.1_hiera_large.pt", help="Path to SAM model checkpoint")
-    parser.add_argument("--sam_config", default="configs/sam2.1/sam2.1_hiera_l.yaml", help="Path to SAM model config")
-    parser.add_argument("--output_format", default="labelstudio", help="Annotation output format (schema filename)")
-    parser.add_argument("--use_cache", action="store_true", help="Use cached results if available")
-    parser.add_argument("--debug", action="store_true", help="Enable debug mode")
+    parser = argparse.ArgumentParser(description="A powerful annotation efficiency tool for flexible image labeling")
     args = parser.parse_args()
 
     # Load configuration
@@ -32,17 +26,17 @@ def main():
     debug_mode = settings.get("processing")["debug_mode"]
     save_visualizations = settings.get("misc")["save_visualizations"]
     visualization_folder = settings.get("misc")["visualization_folder"]
+    yolo_model_file = settings.get("model")["yolo_model_file"]
+    output_format = settings.get("annotation")["format"]
 
     # Select or load YOLO model
-    model_file = select_yolo_model("model", args.model)
-    print(model_file)
+    model_file = select_yolo_model("model", yolo_model_file)
     yolo_model = YOLO(model_file)
     category_mapping = settings.get("annotation")["category_mapping"]
     class_info = load_class_info(model_file, category_mapping, cache_folder, use_cache)
-    print(class_info)
 
     # Generate and load conversion function
-    conversion_path = generate_conversion_function(args.output_format, schema_folder, cache_folder, use_cache)
+    conversion_path = generate_conversion_function(output_format, schema_folder, cache_folder, use_cache)
     spec = importlib.util.spec_from_file_location("conversion_function", conversion_path)
     conversion_module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(conversion_module)
@@ -65,7 +59,6 @@ def main():
             annotations = annotation_processor.process_image(image_path, class_info, conversion_function, image_size, confidence_threshold, debug_mode, save_visualizations, visualization_folder)
             output_file = os.path.join(output_folder, f"{os.path.splitext(image_file)[0]}.json")
             with open(output_file, "w") as f:
-                print(annotations)
                 json.dump(annotations, f, indent=4, cls=NumpyEncoder)
             print(f"Saved annotations to {output_file}")
 

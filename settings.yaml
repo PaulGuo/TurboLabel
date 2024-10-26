@@ -1,6 +1,6 @@
 # Model configuration
 model:
-  yolo_model_path: "./model/yolo-pretrained-best.pt"  # YOLO model file path
+  yolo_model_file: "yolo-pretrained-best.pt"  # YOLO model file path
   sam_model_name: "sam2.1_hiera"
   sam_model_checkpoint: "./sam2/checkpoints/sam2.1_hiera_large.pt"  # SAM model checkpoint path
   sam_model_config: "configs/sam2.1/sam2.1_hiera_l.yaml"  # SAM model configuration file

@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "TurboLabel"
 version = "0.1.0"
-description = "A powerful annotation tool combining YOLO and SAM for image labeling."
+description = "A powerful annotation efficiency tool combining YOLO, SAM, and LLMs for flexible image labeling."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "GPL-3.0-or-later" }
