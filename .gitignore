@@ -4,10 +4,12 @@ settings.dev.yaml
 annotations/*.json
 cache/model/*.json
 data/*.png
+data/*.jpg
 model/*.pt
 visualizations/*.png
 logs/*.log
 sam2/checkpoints/*.pt
+dev/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
