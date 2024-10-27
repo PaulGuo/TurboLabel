@@ -2,6 +2,7 @@ import numpy as np
 import json
 import uuid
 import os
+import cv2
 from PIL import Image
 from sam2.build_sam import build_sam2
 from sam2.sam2_image_predictor import SAM2ImagePredictor
@@ -62,6 +63,22 @@ class AnnotationProcessor:
                 for log in duplicate_log:
                     log_file.write(log + "\n")
 
+    # Clean up best_mask to remove small isolated regions
+    def clean_mask(self, mask):
+        """Keep only the largest connected component in the mask."""
+        # Convert mask to uint8 format if not already
+        mask = mask.astype(np.uint8)
+        # Find connected components
+        num_labels, labels, stats, _ = cv2.connectedComponentsWithStats(mask, connectivity=8)
+        # If there's only one component (the background), return as is
+        if num_labels <= 1:
+            return mask
+        # Find the largest component, ignoring the background (label 0)
+        largest_label = 1 + np.argmax(stats[1:, cv2.CC_STAT_AREA])  # +1 because stats[0] is background
+        # Create a mask with only the largest component
+        cleaned_mask = np.where(labels == largest_label, 1, 0).astype(np.uint8)
+        return cleaned_mask
+
     def process_image(self, image_path, class_info, conversion_function, image_size, confidence_threshold, debug_mode, save_visualizations, visualization_folder):
         """Process a single image and generate annotations"""
         image_name = os.path.splitext(os.path.basename(image_path))[0]
@@ -110,6 +127,9 @@ class AnnotationProcessor:
                 max_score_idx = np.argmax(scores)
                 best_mask = masks[max_score_idx]
 
+                # Assuming `best_mask` is the mask you want to clean up
+                best_mask = self.clean_mask(best_mask)
+
                 # Calculate the bounding box of the best mask
                 ys, xs = np.where(best_mask)
                 x_min, x_max = xs.min(), xs.max()
@@ -142,7 +162,7 @@ class AnnotationProcessor:
 
         # If in debug mode, display visualization output
         if debug_mode and debug_boxes:
-            visualize_annotations(image_name, image, debug_boxes, debug_labels, debug_masks, np.vstack(debug_points), np.concatenate(debug_point_labels), save_visualizations, visualization_folder)
+            visualize_annotations(image_name, image, debug_boxes, debug_labels, debug_masks, np.vstack(debug_points), np.concatenate(debug_point_labels), save_visualizations, visualization_folder, original_boxes=boxes)
 
         # Generate output format using the conversion function
         return conversion_function(image_path, image_file, self.sam_model_name, annotations)

@@ -29,22 +29,35 @@ def show_points(coords, labels, ax, marker_size=175):
     ax.scatter(pos_points[:, 0], pos_points[:, 1], color='green', marker='*', s=marker_size, edgecolor='white', linewidth=1.25)
     ax.scatter(neg_points[:, 0], neg_points[:, 1], color='red', marker='*', s=marker_size, edgecolor='white', linewidth=1.25)
 
-def visualize_annotations(image_name, image, boxes, labels, masks, points, point_labels, save_visualizations, visualization_folder):
+def visualize_annotations(image_name, image, boxes, labels, masks, points, point_labels, save_visualizations, visualization_folder, original_boxes=None):
     """Visualize YOLO bounding boxes, class labels, SAM2 masks, and center points."""
-    plt.figure(figsize=(10, 10))
+    height, width = image.shape[:2]
+    plt.figure(figsize=(width / 100, height / 100), dpi=100)  # Scale figsize and dpi to match image size
     plt.imshow(image)
+
+    # Remove any white border or padding in the figure
+    plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
 
     # Display SAM2 masks
     for mask in masks:
         show_mask(mask, plt.gca())
 
-    # Display YOLO bounding boxes and class labels
+    # Display YOLO bounding boxes and class labels (SAM adjusted)
     for box, label in zip(boxes, labels):
         x_min, y_min, x_max, y_max = box
         plt.gca().add_patch(plt.Rectangle(
             (x_min, y_min), x_max - x_min, y_max - y_min,
             edgecolor='red', facecolor='none', linewidth=2))
         plt.text(x_min, y_min - 5, f'{label}', color='red', fontsize=12)
+
+    # Optionally display original YOLO detection boxes as dashed rectangles
+    if original_boxes is not None:
+        for box in original_boxes:
+            # Extract coordinates in [x_min, y_min, x_max, y_max] format
+            x_min, y_min, x_max, y_max = box.xyxy[0].tolist()
+            plt.gca().add_patch(plt.Rectangle(
+                (x_min, y_min), x_max - x_min, y_max - y_min,
+                edgecolor='yellow', facecolor='none', linewidth=1, linestyle='--'))
 
     # Display center points
     show_points(points, point_labels, plt.gca())
