@@ -20,6 +20,12 @@
 - **Configurable Settings**: Use `settings.yaml` to adjust confidence thresholds, paths, model settings, and annotation formats.
 - **CLI-Based**: A command-line interface (CLI) to streamline the labeling process with options for model selection, debugging, and cache management.
 
+## Demo
+
+The following image demonstrates the automated annotation capabilities of TurboLabel. The model efficiently detects objects and generates accurate bounding boxes and masks for faster, more precise labeling.
+
+![TurboLabel Demo](demonstration.png)
+
 ## Installation
 
 1. **Clone the repository:**
